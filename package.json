@@ -25,6 +25,7 @@
     "build": "extension build"
   },
   "devDependencies": {
+    "@eslint/js": "^9.11.1",
     "@swc/core": "^1.7.28",
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/react": "^18.3.5",
@@ -33,12 +34,16 @@
     "ajv": "^8.17.1",
     "autoprefixer": "^10.4.20",
     "browserslist": "^4.24.0",
+    "eslint": "^9.11.1",
+    "eslint-plugin-react": "^7.37.0",
     "extension": "latest",
+    "globals": "^15.9.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
     "tslib": "^2.7.0",
     "typescript": "5.3.3",
+    "typescript-eslint": "^8.7.0",
     "webpack": "^5.94.0"
   },
   "dependencies": {
