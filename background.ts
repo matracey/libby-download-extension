@@ -1,8 +1,8 @@
-import { Command, Task } from "./common";
-import { addTask, LoadState, Title, updateTask } from "./state";
-import { mp3WithCUE } from "./processor/mp3-with-cue";
-import { mp3Parts } from "./processor/mp3-parts";
-import { parseToc } from "./processor/utils";
+import { Command, Task } from "./scripts/common";
+import { addTask, LoadState, Title, updateTask } from "./scripts/state";
+import { mp3WithCUE } from "./scripts/processor/mp3-with-cue";
+import { mp3Parts } from "./scripts/processor/mp3-parts";
+import { parseToc } from "./scripts/processor/utils";
 
 let stateTask: string;
 let stateCheckCounter = 1;
@@ -10,8 +10,8 @@ let state: LoadState;
 let running: boolean;
 let merge: boolean;
 let decode: boolean;
-browser.runtime.onMessage.addListener(handleCommand);
 
+browser.runtime.onMessage.addListener(handleCommand);
 
 /**
  * Handle browser.runtime messages
@@ -29,7 +29,7 @@ async function handleCommand(command: Command) {
       decode = command.args["decode"];
       state = new LoadState();
       // Clear active tasks
-      await browser.storage.local.set({ "tasks": [] });
+      await browser.storage.local.set({ tasks: [] });
       const reloadTask = await addTask(new Task("", "Reloading Tab", "Running"));
       console.log("Starting network listener...");
       browser.webRequest.onBeforeRequest.addListener(
@@ -37,11 +37,7 @@ async function handleCommand(command: Command) {
         { urls: ["<all_urls>"], types: ["main_frame"] },
         ["blocking"]
       );
-      browser.webRequest.onBeforeRequest.addListener(
-        handleBookMetaWebRequest,
-        { urls: ["<all_urls>"] },
-        ["blocking"]
-      );
+      browser.webRequest.onBeforeRequest.addListener(handleBookMetaWebRequest, { urls: ["<all_urls>"] }, ["blocking"]);
       console.log("Reloading current tab");
       await browser.tabs.reload();
       console.log("Starting download");
@@ -58,9 +54,9 @@ async function handleCommand(command: Command) {
  *
  * @param details
  */
-function handleSync(details: { url?: string | URL; method?: string; requestId?: any; }) {
+function handleSync(details: { url?: string | URL; method?: string; requestId?: any }) {
   const filter = browser.webRequest.filterResponseData(details.requestId);
-  bufferJSONBody(filter, (body) => {
+  bufferJSONBody(filter, body => {
     try {
       const syncState = JSON.parse(body);
       for (const i in syncState.loans) {
@@ -80,9 +76,9 @@ function handleSync(details: { url?: string | URL; method?: string; requestId?: 
  *
  * @param details
  */
-function handleMedia(details: { url?: string | URL; method?: string; requestId?: any; }) {
+function handleMedia(details: { url?: string | URL; method?: string; requestId?: any }) {
   const filter = browser.webRequest.filterResponseData(details.requestId);
-  bufferJSONBody(filter, (body) => {
+  bufferJSONBody(filter, body => {
     try {
       const bookMedia = JSON.parse(body);
       if (bookMedia.covers["cover300Wide"]) {
@@ -115,9 +111,9 @@ function extractBookJson(rsp: str): any {
  *
  * @param details
  */
-function handleTitle(details: { url?: string | URL; method?: string; requestId?: any; }) {
+function handleTitle(details: { url?: string | URL; method?: string; requestId?: any }) {
   const filter = browser.webRequest.filterResponseData(details.requestId);
-  bufferJSONBody(filter, async (body) => {
+  bufferJSONBody(filter, async body => {
     try {
       const responseJson = extractBookJson(body);
       console.log(`Got response ${JSON.stringify(responseJson)}`);
@@ -166,7 +162,7 @@ function handleTitle(details: { url?: string | URL; method?: string; requestId?:
  *
  * @param details WebRequest filter details
  */
-function handleMainFrameWebRequest(details: { url: string; }) {
+function handleMainFrameWebRequest(details: { url: string }) {
   const path = details.url.split("/");
   state.id = path[path.length - 1];
 }
@@ -176,14 +172,15 @@ function handleMainFrameWebRequest(details: { url: string; }) {
  *
  * @param details WebRequest filter details
  */
-function handleBookMetaWebRequest(details: { url: string | URL; method: string; }) {
+function handleBookMetaWebRequest(details: { url: string | URL; method: string }) {
   const url = new URL(details.url);
   if (details.method === "GET") {
     if (url.pathname.endsWith("/sync")) {
       handleSync(details);
     } else if (url.pathname.endsWith(`/media/${state.id}`)) {
       handleMedia(details);
-    } else if (url.host.startsWith("dewey-") && url.pathname === "/") { // the /?m= req
+    } else if (url.host.startsWith("dewey-") && url.pathname === "/") {
+      // the /?m= req
       handleTitle(details);
     }
   }
@@ -199,7 +196,7 @@ function bufferJSONBody(filter: any, action: (body: string) => void) {
   const decoder = new TextDecoder("utf-8");
   const encoder = new TextEncoder();
   let data = "";
-  filter.ondata = (event: { data: BufferSource; }) => {
+  filter.ondata = (event: { data: BufferSource }) => {
     const body = decoder.decode(event.data, { stream: true });
     data += body;
   };
@@ -218,8 +215,7 @@ function bufferJSONBody(filter: any, action: (body: string) => void) {
 function runIfLoaded(): void {
   if (state.loaded()) {
     console.log(`State loaded ${JSON.stringify(state)}`);
-    updateTask(stateTask, "Completed")
-      .catch(handleError);
+    updateTask(stateTask, "Completed").catch(handleError);
     if (!running) {
       running = true;
       browser.webRequest.onBeforeRequest.removeListener(handleMainFrameWebRequest);
@@ -231,7 +227,7 @@ function runIfLoaded(): void {
             state = new LoadState();
             running = false;
           })
-          .catch((error) => {
+          .catch(error => {
             addTask(new Task("", "Loading State", "Failed")).catch(handleError);
             console.log(error);
             state = new LoadState();
@@ -244,7 +240,7 @@ function runIfLoaded(): void {
             state = new LoadState();
             running = false;
           })
-          .catch((error) => {
+          .catch(error => {
             addTask(new Task("", "Loading State", "Failed")).catch(handleError);
             console.log(error);
             state = new LoadState();
@@ -256,8 +252,7 @@ function runIfLoaded(): void {
     }
   } else {
     stateCheckCounter += 1;
-    updateTask(stateTask, `Check ${stateCheckCounter}`)
-      .catch(handleError);
+    updateTask(stateTask, `Check ${stateCheckCounter}`).catch(handleError);
     console.log(`Still waiting for state ${JSON.stringify(state)}`);
   }
 }
@@ -266,6 +261,5 @@ function handleError(error: Error) {
   state = new LoadState();
   running = false;
   console.log(`Error: ${error}`);
-  addTask(new Task("Error", `${error}`, "Failed"))
-    .catch(console.error);
+  addTask(new Task("Error", `${error}`, "Failed")).catch(console.error);
 }

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest.json",
+  "manifest_version": 3,
+  "version": "0.7.0",
+  "name": "Libby Download",
+  "description": "Downloads Audiobooks for transfer to unsupported devices",
+  "icons": {
+    "48": "images/extension.svg",
+    "96": "images/extension.svg"
+  },
+  "background": {
+    "service_worker": "background.ts"
+  },
+  "permissions": [
+    "activeTab",
+    "downloads",
+    "storage",
+    "webRequest",
+    "webRequestBlocking",
+    "https://*.libbyapp.com/*",
+    "https://*.overdrive.com/*"
+  ]
+}
