@@ -25,16 +25,30 @@
     "build": "extension build"
   },
   "devDependencies": {
+    "@swc/core": "^1.9.1",
     "@types/firefox-webext-browser": "^120.0.4",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "acorn": "^8.14.0",
+    "ajv": "^8.17.1",
+    "autoprefixer": "^10.4.20",
     "browserslist": "^4.24.2",
     "extension": "latest",
     "husky": "^9.1.6",
-    "lint-staged": "^15.2.10"
+    "lint-staged": "^15.2.10",
+    "postcss": "^8.4.47",
+    "tslib": "^2.8.1",
+    "typescript": "5.6.3",
+    "webpack": "^5.96.1"
   },
   "dependencies": {
+    "daisyui": "^4.12.14",
     "jszip": "^3.10.1",
     "music-metadata": "^10.5.1",
-    "node-id3": "^0.2.6"
+    "node-id3": "^0.2.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.14"
   },
   "browserslist": "last 5 firefox versions",
   "husky": {

@@ -19,5 +19,14 @@
     "webRequestBlocking",
     "https://*.libbyapp.com/*",
     "https://*.overdrive.com/*"
-  ]
+  ],
+  "action": {
+    "default_icon": {
+      "16": "images/extension.svg",
+      "24": "images/extension.svg",
+      "32": "images/extension.svg"
+    },
+    "default_title": "Libby Download",
+    "default_popup": "./action/index.html"
+  }
 }
