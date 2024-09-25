@@ -1,12 +1,22 @@
 {
   "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
-    "moduleResolution": "node16",
-    "module": "es2020",
-    "target": "es2020",
     "allowJs": true,
-    "esModuleInterop": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "esnext",
+    "verbatimModuleSyntax": true,
+    "useDefineForClassFields": true,
+    "skipLibCheck": true
   },
-  "include": ["src/*.ts", "src/processor/*.ts"],
+  "include": ["./"],
+  "exclude": ["node_modules", "dist"]
 }
