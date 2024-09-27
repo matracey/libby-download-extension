@@ -41,6 +41,7 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
     "tslib": "^2.8.1",
     "typescript": "5.6.3",
     "typescript-eslint": "^8.13.0",
