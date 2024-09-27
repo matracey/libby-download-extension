@@ -1,0 +1,5 @@
+dist
+node_modules
+.yarn
+postcss.config.js
+tailwind.config.js
