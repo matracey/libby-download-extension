@@ -1,14 +1,16 @@
 import React from "react";
 
+import { Hero } from "react-daisyui";
+
 function App() {
   return (
-    <section className="container mx-auto p-5 fixed inset-0">
-      <div className="w-full h-full flex flex-col">
-        <div className="flex-grow overflow-auto">
-          <h1>Welcome to your new extension!</h1>
+    <Hero className="py-5 px-2">
+      <Hero.Content className="text-center">
+        <div className="max-w-md">
+          <h1 className="text-2xl font-bold">Welcome to your new extension!</h1>
         </div>
-      </div>
-    </section>
+      </Hero.Content>
+    </Hero>
   );
 }
 
