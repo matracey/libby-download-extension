@@ -22,10 +22,12 @@
   "scripts": {
     "dev": "extension dev",
     "start": "extension start",
-    "build": "extension build"
+    "build": "extension build",
+    "test": "jest"
   },
   "devDependencies": {
     "@eslint/js": "^9.14.0",
+    "@jest/globals": "^29.7.0",
     "@swc/core": "^1.9.1",
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/react": "^18.3.12",
@@ -39,9 +41,12 @@
     "extension": "latest",
     "globals": "^15.12.0",
     "husky": "^9.1.6",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
+    "ts-jest": "^29.2.5",
     "tslib": "^2.8.1",
     "typescript": "5.6.3",
     "typescript-eslint": "^8.13.0",
