@@ -5,8 +5,10 @@
   "name": "Libby Download",
   "description": "Downloads Audiobooks for transfer to unsupported devices",
   "icons": {
+    "16": "images/extension.svg",
+    "32": "images/extension.svg",
     "48": "images/extension.svg",
-    "96": "images/extension.svg"
+    "128": "images/extension.svg"
   },
   "background": {
     "service_worker": "background.ts"
@@ -24,7 +26,9 @@
     "default_icon": {
       "16": "images/extension.svg",
       "24": "images/extension.svg",
-      "32": "images/extension.svg"
+      "32": "images/extension.svg",
+      "48": "images/extension.svg",
+      "128": "images/extension.svg"
     },
     "default_title": "Libby Download",
     "default_popup": "./action/index.html"

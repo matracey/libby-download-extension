@@ -335,5 +335,10 @@ $RECYCLE.BIN/
 # and uncomment the following lines
 .pnp.*
 
+### CUSTOM ###
+
 # extension.js
 extension-env.d.ts
+
+images/*
+!images/*.svg
