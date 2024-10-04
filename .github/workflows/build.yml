@@ -1,0 +1,100 @@
+name: Build and Publish Extension
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        browser: [chrome, edge, firefox]
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Mise
+      uses: jdx/mise-action@v2
+
+    - name: Activate Mise
+      run: eval "$(mise activate bash --shims)"
+
+    - name: Install dependencies
+      uses: borales/actions-yarn@v5
+      with:
+        cmd: install
+
+    - name: Build the extension
+      uses: borales/actions-yarn@v5
+      with:
+        cmd: build -b ${{ matrix.browser }} --zip
+    
+    - name: Get output file info
+      id: build_info
+      uses: ./.github/actions/fileinfo
+      env:
+        ext: ${{ matrix.browser == 'firefox' && 'xpi' || 'zip' }}
+      with:
+        file-path: "dist/${{ matrix.browser }}/*.${{ env.ext }}"
+        
+    - name: Rename build output to include browser name
+      env:
+        SRC: ${{ steps.build_info.outputs.path }}
+        DEST: ${{ steps.build_info.outputs.dirname }}/${{ steps.build_info.outputs.basename }}-${{ matrix.browser }}.${{ steps.build_info.outputs.extension }}
+      run: mv $SRC $DEST
+
+    - name: Get archive info
+      id: archive_info
+      uses: ./.github/actions/fileinfo
+      with:
+        file-path: ${{ steps.build_info.outputs.dirname }}/*.${{ steps.build_info.outputs.extension }}
+
+    - name: Publish build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.archive_info.outputs.filename }}
+        path: ${{ steps.archive_info.outputs.path }}
+
+    - uses: cardinalby/webext-buildtools-chrome-crx-action@v2
+      if: matrix.browser != 'firefox'
+      env:
+        archive: ${{ steps.archive_info.outputs.filename }}
+        crx: "${{ steps.archive_info.outputs.dirname }}/${{ steps.archive_info.outputs.basename }}.crx"
+      with:
+        zipFilePath: ${{ steps.archive_info.outputs.path }}
+        crxFilePath: ${{ env.crx }}
+        privateKey: ${{ secrets.CRX_PRIVATE_KEY }}
+    
+    - name: Publish crx artifact
+      uses: actions/upload-artifact@v4
+      if: matrix.browser != 'firefox'
+      with:
+        name: "${{ steps.archive_info.outputs.basename }}.crx"
+        path: "${{ steps.archive_info.outputs.dirname }}/${{ steps.archive_info.outputs.basename }}.crx"
+
+  publish:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    permissions:
+      contents: write
+    steps:
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ${{ github.workspace }}
+        merge-multiple: true
+
+    - name: Create GitHub Release on Repo
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          *.zip
+          *.crx
+          *.xpi
