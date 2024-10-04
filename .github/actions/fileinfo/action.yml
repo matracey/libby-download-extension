@@ -1,0 +1,47 @@
+name: "Get file info"
+author: "Martin Tracey"
+description: "An action that can be used to get information about a file within a workflow."
+inputs:
+  file-path:
+    description: "The path to the file to get information about."
+    required: true
+  cwd:
+    description: "The directory to run the command in."
+    required: false
+    default: "."
+outputs:
+  path:
+    description: "The path to the file."
+    value: ${{ steps.file_info.outputs.path }}
+  dirname:
+    description: "The directory name of the file."
+    value: ${{ steps.file_info.outputs.dirname }}
+  filename:
+    description: "The name of the file."
+    value: ${{ steps.file_info.outputs.filename }}
+  basename:
+    description: "The base name of the file."
+    value: ${{ steps.file_info.outputs.basename }}
+  extension:
+    description: "The extension of the file."
+    value: ${{ steps.file_info.outputs.extension }}
+runs:
+  using: "composite"
+  steps:
+  - name: Get file info
+    id: file_info
+    working-directory: ${{ inputs.cwd }}
+    shell: bash
+    run: |
+      PATH="$(ls ${{ inputs.file-path }})"
+      DIRNAME="${PATH%/*}"
+      FILENAME="${PATH##*/}"
+      BASENAME="${FILENAME%.*}"
+      EXTENSION="${FILENAME##*.}"
+
+      echo "path=$PATH" >> $GITHUB_OUTPUT
+      echo "dirname=$DIRNAME" >> $GITHUB_OUTPUT
+      echo "filename=$FILENAME" >> $GITHUB_OUTPUT
+      echo "basename=$BASENAME" >> $GITHUB_OUTPUT
+      echo "extension=$EXTENSION" >> $GITHUB_OUTPUT
+
