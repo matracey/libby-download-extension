@@ -1,9 +1,10 @@
 import { ChapterBounds, cleanFilename, downloadZip, getMp3Meta, getSpine, MP3Meta, Spine, zeroPad } from "./utils";
 import JSZip from "jszip";
 import NodeID3 from "node-id3";
-import { addTask, LoadState, updateTask } from "../state";
 import { fetchPartWithDuration, FetchResult } from "./fetch";
-import { Task } from "../common";
+
+import { Task } from "../models/common/task";
+import { LoadState } from "../models/state/loadState";
 
 /**
  * Fetch Audiobook as a single merged MP3 file with a .cue file
@@ -87,7 +88,7 @@ export async function processMP3Files(spine: Spine, meta: MP3Meta, decode: boole
   // iterate chapters, downloading parts and emitting cue file entries
   // along the way
   for (const entry of spine.index) {
-    const chapterTask = await addTask(new Task(entry.title, "Processing", "Running"));
+    const chapterTask = await Task.addTask(new Task(entry.title, "Processing", "Running"));
     console.log(`Processing chapter '${entry.title}' ${entry.start.part}#${entry.start.offset} to ${entry.end.part}#${entry.end.offset}`);
     const start = offset;
     const idx = spine.index.indexOf(entry);
@@ -131,7 +132,7 @@ export async function processMP3Files(spine: Spine, meta: MP3Meta, decode: boole
   TRACK ${zeroPad(idx + 1)} AUDIO
     TITLE "${entry.title}"
     INDEX 01 ${toTime(false, Math.round(start))}:00`;
-    await updateTask(chapterTask, "Completed");
+    await Task.updateTask(chapterTask, "Completed");
   }
 
   // handle offsets of last chapter

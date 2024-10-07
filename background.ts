@@ -1,8 +1,10 @@
-import { Command, Task } from "./scripts/common";
-import { addTask, LoadState, Title, updateTask } from "./scripts/state";
 import { mp3WithCUE } from "./scripts/processor/mp3-with-cue";
 import { mp3Parts } from "./scripts/processor/mp3-parts";
 import { parseToc } from "./scripts/processor/utils";
+import { Command } from "./scripts/models/common/command";
+import { Task } from "./scripts/models/common/task";
+import { Title } from "./scripts/models/state/title";
+import { LoadState } from "./scripts/models/state/loadState";
 
 let stateTask: string;
 let stateCheckCounter = 1;
@@ -30,7 +32,7 @@ async function handleCommand(command: Command) {
       state = new LoadState();
       // Clear active tasks
       await browser.storage.local.set({ tasks: [] });
-      const reloadTask = await addTask(new Task("", "Reloading Tab", "Running"));
+      const reloadTask = await Task.addTask(new Task("", "Reloading Tab", "Running"));
       console.log("Starting network listener...");
       browser.webRequest.onBeforeRequest.addListener(
         handleMainFrameWebRequest,
@@ -41,8 +43,8 @@ async function handleCommand(command: Command) {
       console.log("Reloading current tab");
       await browser.tabs.reload();
       console.log("Starting download");
-      await updateTask(reloadTask, "Completed");
-      stateTask = await addTask(new Task("", "Waiting for State", "Waiting"));
+      await Task.updateTask(reloadTask, "Completed");
+      stateTask = await Task.addTask(new Task("", "Waiting for State", "Waiting"));
     });
   } else {
     console.log(`Got command ${command.cmd}`);
@@ -215,7 +217,9 @@ function bufferJSONBody(filter: any, action: (body: string) => void) {
 function runIfLoaded(): void {
   if (state.loaded()) {
     console.log(`State loaded ${JSON.stringify(state)}`);
-    updateTask(stateTask, "Completed").catch(handleError);
+    (async function (id: string, state: string) {
+      return Task.updateTask(id, state);
+    })(stateTask, "Completed").catch(handleError);
     if (!running) {
       running = true;
       browser.webRequest.onBeforeRequest.removeListener(handleMainFrameWebRequest);
@@ -228,7 +232,9 @@ function runIfLoaded(): void {
             running = false;
           })
           .catch(error => {
-            addTask(new Task("", "Loading State", "Failed")).catch(handleError);
+            (async function (task: Task): Promise<string> {
+              return Task.addTask(task);
+            })(new Task("", "Loading State", "Failed")).catch(handleError);
             console.log(error);
             state = new LoadState();
             running = false;
@@ -241,7 +247,9 @@ function runIfLoaded(): void {
             running = false;
           })
           .catch(error => {
-            addTask(new Task("", "Loading State", "Failed")).catch(handleError);
+            (async function (task: Task): Promise<string> {
+              return Task.addTask(task);
+            })(new Task("", "Loading State", "Failed")).catch(handleError);
             console.log(error);
             state = new LoadState();
             running = false;
@@ -252,7 +260,9 @@ function runIfLoaded(): void {
     }
   } else {
     stateCheckCounter += 1;
-    updateTask(stateTask, `Check ${stateCheckCounter}`).catch(handleError);
+    (async function (id: string, state: string) {
+      return Task.updateTask(id, state);
+    })(stateTask, `Check ${stateCheckCounter}`).catch(handleError);
     console.log(`Still waiting for state ${JSON.stringify(state)}`);
   }
 }
@@ -261,5 +271,7 @@ function handleError(error: Error) {
   state = new LoadState();
   running = false;
   console.log(`Error: ${error}`);
-  addTask(new Task("Error", `${error}`, "Failed")).catch(console.error);
+  (async function (task: Task): Promise<string> {
+    return Task.addTask(task);
+  })(new Task("Error", `${error}`, "Failed")).catch(console.error);
 }
