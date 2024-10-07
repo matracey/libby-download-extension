@@ -1,6 +1,6 @@
 import { zeroPad } from "./utils";
-import { addTask, updateTask } from "../state";
-import { Task } from "../common";
+
+import { Task } from "../models/common/task";
 
 /**
  * Part number, mp3 file content, and calculated duration
@@ -24,11 +24,11 @@ export class FetchResult {
  * @param url Url to file
  */
 export async function fetchPart(part: number, url: URL): Promise<Uint8Array> {
-  const downloadTask = await addTask(new Task(`Part${zeroPad(part)}`, "Download", "Running"));
+  const downloadTask = await Task.addTask(new Task(`Part${zeroPad(part)}`, "Download", "Running"));
   console.log(`Fetching ${url}`);
   const response = await fetch(url);
   const content = new Uint8Array(await response.arrayBuffer());
-  await updateTask(downloadTask, "Completed");
+  await Task.updateTask(downloadTask, "Completed");
   return content;
 }
 
@@ -44,12 +44,12 @@ export async function fetchPartWithDuration(part: number, url: URL, decode: bool
   const content = await fetchPart(part, url);
   let duration;
   if (decode) {
-    const decodeTask = await addTask(new Task(`Part${zeroPad(part)}`, "Decoding Audio", "Running"));
+    const decodeTask = await Task.addTask(new Task(`Part${zeroPad(part)}`, "Decoding Audio", "Running"));
     const audioContext = new AudioContext();
     const copy = new Uint8Array(content);
     const buffer = await audioContext.decodeAudioData(copy.buffer);
     duration = buffer.duration
-    await updateTask(decodeTask, "Completed");
+    await Task.updateTask(decodeTask, "Completed");
   } else {
     import("music-metadata");
     const musicMetadata = await import("music-metadata");

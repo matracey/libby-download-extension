@@ -1,8 +1,8 @@
-import { LoadState } from "../state";
 import { downloadZip, getMp3Meta, getSpine, zeroPad } from "./utils";
 import JSZip from "jszip";
 import NodeID3 from "node-id3";
 import { fetchPart } from "./fetch";
+import { LoadState } from "../models/state/loadState";
 
 /**
  * Fetch Audiobook exactly as it comes from Libby

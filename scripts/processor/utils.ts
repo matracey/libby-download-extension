@@ -1,5 +1,7 @@
-import { Task } from "../common";
-import { addTask, Chapter, LoadState, ParsedPartPath, updateTask } from "../state";
+import { Task } from "../models/common/task";
+import { Chapter } from "../models/state/chapter";
+import { LoadState } from "../models/state/loadState";
+import { ParsedPartPath } from "../models/state/parsedPartPath";
 
 /**
  * MP3 metadata that should be added to the file
@@ -184,14 +186,14 @@ export function zeroPad(index: number): string {
  */
 export async function downloadZip(zip: any, title: string, expiration: Date) {
   const zipName = cleanFilename(`${title}_DUE_${expiration.toDateString()}.zip`);
-  const processTask = await addTask(new Task(zipName, "Downloading Zip", "Running"));
+  const processTask = await Task.addTask(new Task(zipName, "Downloading Zip", "Running"));
   const archive = await zip.generateAsync({ type: "blob" });
   const archiveUrl = URL.createObjectURL(archive);
   await browser.downloads.download({
     "filename": zipName,
     url: archiveUrl
   });
-  await updateTask(processTask, "Completed");
+  await Task.updateTask(processTask, "Completed");
   URL.revokeObjectURL(archiveUrl);
 }
 
