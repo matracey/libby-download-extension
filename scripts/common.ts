@@ -1,5 +1,3 @@
-const { v4: uuidv4 } = require("uuid");
-
 export class Message {
   cmd: string;
   status: Task;
@@ -35,7 +33,7 @@ export class Task {
   state: string;
 
   constructor(filename: string, task: string, state: string) {
-    this.id = uuidv4();
+    this.id = self.crypto.randomUUID();
     this.filename = filename;
     this.task = task;
     this.state = state;
