@@ -3,3 +3,4 @@ export * from "./IColor";
 export * from "./IContentFormat";
 export * from "./IContentBase";
 export * from "./ITitle";
+export * from "./IHoldableTitle";
