@@ -7,3 +7,4 @@ export * from "./IHoldableTitle";
 export * from "./IHold";
 export * from "./ISeriesEntry";
 export * from "./IConstrainable";
+export * from "./ICreator";
