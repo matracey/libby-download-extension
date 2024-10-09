@@ -1,4 +1,13 @@
 /**
+ * Gets the request body for a given request browser.webRequest requestId as a string.
+ *
+ * @param requestId The requestId of the request to get the body of.
+ * @returns The request body as a string.
+ */
+export const getRequestBodyString = async (requestId: string): Promise<string> =>
+  await bufferStreamFilterData(browser.webRequest.filterResponseData(requestId));
+
+/**
  * Buffers data from a browser web request StreamFilter, decodes it as UTF-8 text,
  * and resolves with the concatenated string data once the stream stops.
  *
