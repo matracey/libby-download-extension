@@ -9,3 +9,8 @@ export interface ISentrySyncRequestDetails extends IGetRequestDetails {}
 
 export const isSentrySyncRequestDetails = (d: OnBeforeRequestDetails): d is ISentrySyncRequestDetails =>
   isGetRequestDetails(d) && isSentryRequestDetails(d) && new URL(d.url).pathname.endsWith("/sync");
+
+export interface ISentryLoanRequestDetails extends IGetRequestDetails {}
+
+export const isSentryLoanRequestDetails = (d: OnBeforeRequestDetails): d is ISentryLoanRequestDetails =>
+  isGetRequestDetails(d) && isSentryRequestDetails(d) && /card\/\d+\/loan\/\d+/.test(new URL(d.url).pathname);
