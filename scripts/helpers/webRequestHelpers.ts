@@ -1,4 +1,13 @@
 /**
+ * Gets the request body for a given request browser.webRequest requestId.
+ *
+ * @param requestId The requestId of the request to get the body of.
+ * @returns The request body as the type T.
+ */
+export const getRequestBody = async <T>(requestId: string): Promise<T> =>
+  JSON.parse(await getRequestBodyString(requestId)) as T;
+
+/**
  * Gets the request body for a given request browser.webRequest requestId as a string.
  *
  * @param requestId The requestId of the request to get the body of.
