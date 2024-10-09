@@ -5,3 +5,4 @@ export * from "./IContentBase";
 export * from "./ITitle";
 export * from "./IHoldableTitle";
 export * from "./IHold";
+export * from "./ISeriesEntry";
