@@ -6,3 +6,4 @@ export * from "./ITitle";
 export * from "./IHoldableTitle";
 export * from "./IHold";
 export * from "./ISeriesEntry";
+export * from "./IConstrainable";
